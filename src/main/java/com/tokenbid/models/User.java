@@ -39,6 +39,9 @@ public class User {
     @Column(name = "tokens")
     private int tokens;
 
+    @Column(name = "email_verified")
+    private boolean email_verified = false;
+
     /**
      * Parameterized constructor for User class.
      * 
@@ -59,12 +62,13 @@ public class User {
      * @param lastName  The last name of the user.
      * @param email     The email of the user.
      */
-    public User(String username, String password, String firstName, String lastName, String email) {
+    public User(String username, String password, String firstName, String lastName, String email, boolean email_verified) {
         this.username = username;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+        this.email_verified = email_verified;
     }
 
     /**
@@ -77,13 +81,14 @@ public class User {
      * @param email     The email of the user.
      * @param tokens    The tokens of the user.
      */
-    public User(String username, String password, String firstName, String lastName, String email, int tokens) {
+    public User(String username, String password, String firstName, String lastName, String email, int tokens, boolean email_verified) {
         this.username = username;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.tokens = tokens;
+        this.email_verified = email_verified;
     }
 
 }
