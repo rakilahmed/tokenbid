@@ -10,7 +10,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-
 @Entity
 @Table(name = "bids")
 @Getter
@@ -34,7 +33,7 @@ public class Bid {
 
     @Column(name = "is_outbid")
     @JsonProperty("isOutbid")
-    private boolean isOutbid;
+    private boolean isOutbid = false;
 
     /**
      * Parameterized constructor for Bid class.

@@ -36,7 +36,7 @@ public class Auction {
     private int previousBid;
 
     @Column(name = "status")
-    private String status;
+    private String status = "In Progress";
 
     @Column(name = "start_time")
     private Timestamp startTime;
