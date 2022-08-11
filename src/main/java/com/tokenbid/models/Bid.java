@@ -1,5 +1,6 @@
 package com.tokenbid.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import javax.persistence.Column;
@@ -31,7 +32,8 @@ public class Bid {
     @Column(name = "bid")
     private int bid;
 
-    @Column(name = "is_outbid", columnDefinition = "boolean default false")
+    @Column(name = "is_outbid")
+    @JsonProperty("isOutbid")
     private boolean isOutbid;
 
     /**
