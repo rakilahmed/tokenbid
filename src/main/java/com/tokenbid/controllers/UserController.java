@@ -73,4 +73,17 @@ public class UserController implements IController<User> {
     public ResponseEntity<List<User>> getAll() {
         return ResponseEntity.ok(userService.getAll());
     }
+
+    /**
+     * Mapper for Add token and set email_verified as true after successful registration
+     */
+    @PutMapping(path = "/{id}/add-token", consumes = "application/json")
+    public ResponseEntity<Boolean> addToken(@PathVariable("id") int userId) {
+
+        if(userService.getById(userId) != null){
+            userService.addTokenToUserAccount(userId);
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
 }

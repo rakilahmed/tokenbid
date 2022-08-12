@@ -50,8 +50,22 @@ public class UserService implements IService<User> {
         return userRepository.findAll();
     }
 
-    public void addTokenToUserAccount() {
-        
+    /**
+     * Adds 250 tokens to user account upon successful registration of email
+     * How : pass userID as method Input -> if userId exists in DB then get a user object from DB using userID -> set token 250 & email_verified as true -> update user
+     * @param userId
+     */
+    public boolean addTokenToUserAccount(int userId) {
+
+            if (userRepository.findById(userId).isPresent()) {
+                User user = getById(userId);
+                user.setTokens(250);
+                user.setEmail_verified(true);
+                userRepository.save(user);
+                return true;
+            } else {
+                return false;
+            }
     }
 
     public void tesMethod() {
