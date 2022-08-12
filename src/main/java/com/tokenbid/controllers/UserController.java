@@ -4,7 +4,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
+import com.tokenbid.services.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.cdi.Eager;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,10 +24,12 @@ import com.tokenbid.services.UserService;
 @RequestMapping("/users")
 public class UserController implements IController<User> {
     private UserService userService;
+    private EmailService emailService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, EmailService emailService) {
         this.userService = userService;
+        this.emailService = emailService;
     }
 
     @Override
@@ -72,5 +76,10 @@ public class UserController implements IController<User> {
     @GetMapping(path = "/all", produces = "application/json")
     public ResponseEntity<List<User>> getAll() {
         return ResponseEntity.ok(userService.getAll());
+    }
+
+    @GetMapping(path = "/testEmail")
+    public ResponseEntity<Boolean> sendEmail() {
+        emailService.sendMessage();
     }
 }
