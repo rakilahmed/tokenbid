@@ -50,6 +50,10 @@ public class UserService implements IService<User> {
         return userRepository.findAll();
     }
 
+    public void addTokenToUserAccount() {
+        
+    }
+
     public void tesMethod() {
         System.out.println("tesMethod");
     }
