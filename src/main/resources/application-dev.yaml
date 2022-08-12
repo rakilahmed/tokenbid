@@ -4,6 +4,17 @@ spring:
     password: 1121Postgres!
     url: jdbc:postgresql://localhost:5432/tokenbid
     driver-class-name: org.postgresql.Driver
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: exceptions.tokenbid@gmail.com
+    password: dfcdfdazolbitwda
+    protocol: smtp
+    tls: true
+    properties.mail.smtp:
+      auth: true
+      starttls.enable: true
+      ssl.trust: smtp.gmail.com
 
 logging:
   level:
