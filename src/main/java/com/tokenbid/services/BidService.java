@@ -51,10 +51,11 @@ public class BidService implements IService<Bid> {
     }
 
     /**
-     * Find the highest Bid and associated user From Bid Table, Input auction ID output the highest bid and user id
+     * find the highest bid and user id from bids table
+     * @param auctionID
+     * @return Bid object with the highest Bid
      */
     public Bid getHighestBidForAnAuction(int auctionID){
-        System.out.println("Highest Bid :" +bidRepository.getHighestBidForAnAuction(auctionID).getBid() + "User ID :" +bidRepository.getHighestBidForAnAuction(auctionID).getUserId());
         return bidRepository.getHighestBidForAnAuction(auctionID);
     }
 

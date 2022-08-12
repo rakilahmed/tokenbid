@@ -54,19 +54,18 @@ public class UserService implements IService<User> {
      * If the user is found, and not verified already, it verifies the email and add
      * 250 free tokens to the user's account.
      * 
-     * @param id The user's id.
+     * @param userId The user's id.
      * @return True if the user was found and verified, false otherwise.
      */
-    public boolean verifyUserAndAddFreeTokens(int id) {
-        if (userRepository.findById(id).isPresent() &&
-                !userRepository.findById(id).get().isEmailVerified()) {
-            User user = getById(id);
+    public boolean verifyUserAndAddFreeTokens(int userId) {
+        if (userRepository.findById(userId).isPresent() &&
+                !userRepository.findById(userId).get().isEmailVerified()) {
+            User user = getById(userId);
             user.setEmailVerified(true);
             user.setTokens(250);
             userRepository.save(user);
             return true;
         }
-
         return false;
     }
 }
