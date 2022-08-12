@@ -73,4 +73,13 @@ public class BidController implements IController<Bid> {
     public ResponseEntity<List<Bid>> getAll() {
         return ResponseEntity.ok(bidService.getAll());
     }
+
+    /**
+     * To Get the Highest Bid and User from bids table
+     *
+     */
+    @GetMapping(path = "/{id}/highest-bid", produces = "application/json")
+    public ResponseEntity<Bid> getHighestBidAndUserId(@PathVariable("id") int auctionId){
+        return ResponseEntity.ok(bidService.getHighestBidForAnAuction(auctionId));
+    }
 }

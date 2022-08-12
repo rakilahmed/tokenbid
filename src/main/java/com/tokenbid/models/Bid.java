@@ -10,13 +10,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-@Entity
-@Table(name = "bids")
 @Getter
 @Setter
 @NoArgsConstructor
 @ToString
 @EqualsAndHashCode
+@Entity
+@Table(name = "bids")
 public class Bid {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,4 +34,5 @@ public class Bid {
     @Column(name = "is_outbid")
     @JsonProperty("isOutbid")
     private boolean isOutbid = false;
+
 }
