@@ -11,15 +11,21 @@ import com.tokenbid.repositories.UserRepository;
 @Service
 public class UserService implements IService<User> {
     private UserRepository userRepository;
+    private EmailService emailService;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, EmailService emailService) {
         this.userRepository = userRepository;
+        this.emailService = emailService;
     }
 
     @Override
     public int add(User user) {
-        return userRepository.save(user).getUserId();
+        User newUser = userRepository.save(user);
+        String activationLink = "http://localhost:8080/users/" + newUser.getUserId() + "/verify";
+        String message = buildRegistrationEmail(newUser.getFirstName(), newUser.getLastName(), activationLink);
+        emailService.sendHTMLEmail(newUser.getEmail(), "Welcome to TokenBid!", message);
+        return newUser.getUserId();
     }
 
     @Override
@@ -67,5 +73,16 @@ public class UserService implements IService<User> {
             return true;
         }
         return false;
+    }
+
+    private String buildRegistrationEmail(String firstName, String lastName, String activationLink) {
+        return "<div style=\"font-family: Verdana,Arial,sans-serif; font-size: 24px; font-weight: bold; background-color: black; color: white; padding: 0.5em;\">" +
+                    "<p style=\"margin: 0; padding: 0; text-align: center;\">Confirm your email</p>" +
+                "</div>" +
+                "<div style=\"font-family: Verdana,Arial,sans-serif; font-size: 16px; margin: 0;\">" +
+                    "<p style=\"margin-top: 1.5em;\">Hi " + firstName + " " + lastName + ",</p>" +
+                    "<p style=\"margin-top: 1.5em;\">Thank you for registering with TokenBid. Please click on the link below to activate your account:</p>" +
+                    "<p style=\"margin-top: 1.5em; margin-left: 2em; background-color: #ddd; padding: 0.5em;\"><a href=" + activationLink + ">" + activationLink + "</a></p>" +
+                "</div>";
     }
 }
