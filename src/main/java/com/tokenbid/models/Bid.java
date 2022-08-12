@@ -34,32 +34,4 @@ public class Bid {
     @Column(name = "is_outbid")
     @JsonProperty("isOutbid")
     private boolean isOutbid = false;
-
-    /**
-     * Parameterized constructor for Bid class.
-     * 
-     * @param auctionId The auction id of the bid.
-     * @param userId    The user id of the bid.
-     * @param bid       The bid of the bid.
-     */
-    public Bid(int auctionId, int userId, int bid) {
-        this.auctionId = auctionId;
-        this.userId = userId;
-        this.bid = bid;
-    }
-
-    /**
-     * Parameterized constructor for Bid class.
-     * 
-     * @param auctionId The auction id of the bid.
-     * @param userId    The user id of the bid.
-     * @param bid       The bid of the bid.
-     * @param isOutbid  The is outbid of the bid.
-     */
-    public Bid(int auctionId, int userId, int bid, boolean isOutbid) {
-        this.auctionId = auctionId;
-        this.userId = userId;
-        this.bid = bid;
-        this.isOutbid = isOutbid;
-    }
 }

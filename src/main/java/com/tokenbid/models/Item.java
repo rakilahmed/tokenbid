@@ -9,7 +9,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -33,32 +32,4 @@ public class Item {
 
     @Column(name = "description")
     private String description;
-
-    /**
-     * Parameterized constructor for Item class.
-     * 
-     * @param userId   The user id of the item.
-     * @param category The category of the item.
-     * @param title    The title of the item.
-     */
-    public Item(int userId, String category, String title) {
-        this.userId = userId;
-        this.category = category;
-        this.title = title;
-    }
-
-    /**
-     * Parameterized constructor for Item class.
-     * 
-     * @param userId      The user id of the item.
-     * @param category    The category of the item.
-     * @param title       The title of the item.
-     * @param description The description of the item.
-     */
-    public Item(int userId, String category, String title, String description) {
-        this.userId = userId;
-        this.category = category;
-        this.title = title;
-        this.description = description;
-    }
 }
