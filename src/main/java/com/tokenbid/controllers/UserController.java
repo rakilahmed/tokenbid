@@ -77,9 +77,4 @@ public class UserController implements IController<User> {
     public ResponseEntity<List<User>> getAll() {
         return ResponseEntity.ok(userService.getAll());
     }
-
-    @GetMapping(path = "/testEmail")
-    public ResponseEntity<Boolean> sendEmail() {
-        emailService.sendMessage();
-    }
 }
