@@ -29,8 +29,8 @@ public class AuctionService implements IService<Auction> {
     }
 
     @Override
-    public int add(Auction item) {
-        return auctionRepository.save(item).getAuctionId();
+    public int add(Auction auction) {
+        return auctionRepository.save(auction).getAuctionId();
     }
 
     @Override
@@ -49,23 +49,23 @@ public class AuctionService implements IService<Auction> {
                     notifyNotSold(seller, item);
                     break;
                 case "Cancelled":
-                    // TODO : Email seller when they cancel an auction?
+                    notifyCancelled(seller, item);
                     break;
             }
         }
     }
 
     @Override
-    public void delete(int id) {
-        if (auctionRepository.findById(id).isPresent()) {
-            auctionRepository.deleteById(id);
+    public void delete(int auctionId) {
+        if (auctionRepository.findById(auctionId).isPresent()) {
+            auctionRepository.deleteById(auctionId);
         }
     }
 
     @Override
-    public Auction getById(int id) {
-        if (auctionRepository.findById(id).isPresent()) {
-            return auctionRepository.findById(id).get();
+    public Auction getById(int auctionId) {
+        if (auctionRepository.findById(auctionId).isPresent()) {
+            return auctionRepository.findById(auctionId).get();
         }
 
         return null;
@@ -76,12 +76,71 @@ public class AuctionService implements IService<Auction> {
         return auctionRepository.findAll();
     }
 
+    /**
+     * Compose and send emails to the seller and buyer when an auction ends with a sale
+     * @param seller User selling the item
+     * @param buyer User who won the auction
+     * @param item Item being sold
+     * @param winningBid The auction's winning bid
+     */
     private void notifySold(User seller, User buyer, Item item, Bid winningBid) {
-        emailService.sendEmail(seller.getEmail(), "Notification","Congratulations, your item " + item.getTitle() + " was successfully sold for " + winningBid.getBid() + " tokens");
-        emailService.sendEmail(buyer.getEmail(), "Notification","Congratulations, you won the bid for " + item.getTitle() + " at " + winningBid.getBid() + " tokens");
-    }
-    private void notifyNotSold(User seller, Item item) {
-        emailService.sendEmail(seller.getEmail(), "Notification", "Hi " + seller.getFirstName() + " " + seller.getLastName() + ",\nYour auction for item " + item.getTitle() + " has ended with no successful bids.");
+        String soldBody =
+                "<div style=\"background-color:#ad8; min-height: 300px\">" +
+                    "<div style=\"font-family: Verdana,Arial,sans-serif; font-size: 24px; font-weight: bold; background-color: black; color: white; padding: 0.5em\">" +
+                        "<p style=\"margin: 0; padding: 0; text-align: center\">Item Sold</p>" +
+                    "</div>" +
+                    "<div style=\"font-family: Verdana,Arial,sans-serif; font-size: 16px; margin: 0; padding-left:0.5em\">" +
+                        "<p style=\"margin-top: 1.5em\">Hi " + seller.getFirstName() + " " + seller.getLastName() + ",</p>" +
+                        "<p style=\"margin-top: 1.5em\">Congratulations! Your item '" + item.getTitle() + "' was sold for " + winningBid.getBid() + " tokens to " + buyer.getFirstName() + " " + buyer.getLastName() + ".</p>" +
+                    "</div>" +
+                "</div>";
+        String boughtBody =
+                "<div style=\"background-color:#ad8; min-height: 300px\">" +
+                    "<div style=\"font-family: Verdana,Arial,sans-serif; font-size: 24px; font-weight: bold; background-color: black; color: white; padding: 0.5em\">" +
+                        "<p style=\"margin: 0; padding: 0; text-align: center\">Auction Won</p>" +
+                    "</div>" +
+                    "<div style=\"font-family: Verdana,Arial,sans-serif; font-size: 16px; margin: 0; padding-left:0.5em\">" +
+                        "<p style=\"margin-top: 1.5em\">Hi " + buyer.getFirstName() + " " + buyer.getLastName() + ",</p>" +
+                        "<p style=\"margin-top: 1.5em\">Congratulations! You won the bid for '" + item.getTitle() + "' at " + winningBid.getBid() + " tokens.</p>" +
+                    "</div>" +
+                "</div>";
+        emailService.sendHTMLEmail(seller.getEmail(), "Auction Ended", soldBody);
+        emailService.sendHTMLEmail(buyer.getEmail(), "Auction Ended", boughtBody);
     }
 
+    /**
+     * Compose and send an email to the seller when an auction ends with no sale
+     * @param seller User selling the item
+     * @param item Item for auction that was not sold
+     */
+    private void notifyNotSold(User seller, Item item) {
+        String notSoldBody =
+                "<div style=\"background-color:#abc; min-height: 300px\">" +
+                    "<div style=\"font-family: Verdana,Arial,sans-serif; font-size: 24px; font-weight: bold; background-color: black; color: white; padding: 0.5em\">" +
+                        "<p style=\"margin: 0; padding: 0; text-align: center\">Item Not Sold</p>" +
+                    "</div>" +
+                    "<div style=\"font-family: Verdana,Arial,sans-serif; font-size: 16px; margin: 0; padding-left:0.5em\">" +
+                        "<p style=\"margin-top: 1.5em\">Hi " + seller.getFirstName() + " " + seller.getLastName() + ",</p>" +
+                        "<p style=\"margin-top: 1.5em\">Your auction for item '" + item.getTitle() + "' has ended with no successful bids.</p>" +
+                    "</div>" +
+                "</div>";
+        emailService.sendHTMLEmail(seller.getEmail(), "Auction Ended", notSoldBody);
+    }
+
+    /**
+     * Compose and send an email to the seller when they cancel their auction
+     * @param seller User selling the item
+     * @param item Item for auction
+     */
+    private void notifyCancelled(User seller, Item item) {
+        String cancelledBody =
+                "<div style=\"font-family: Verdana,Arial,sans-serif; font-size: 24px; font-weight: bold; background-color: black; color: white; padding: 0.5em\">" +
+                    "<p style=\"margin: 0; padding: 0; text-align: center\">Cancelled</p>" +
+                "</div>" +
+                "<div style=\"font-family: Verdana,Arial,sans-serif; font-size: 16px; margin: 0; padding-left:0.5em\">" +
+                    "<p style=\"margin-top: 1.5em\">Hi " + seller.getFirstName() + " " + seller.getLastName() + ",</p>" +
+                    "<p style=\"margin-top: 1.5em\">Your auction for item '" + item.getTitle() + "' was successful cancelled.</p>" +
+                "</div>";
+        emailService.sendHTMLEmail(seller.getEmail(), "Auction Ended", cancelledBody);
+    }
 }
