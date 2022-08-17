@@ -1,118 +1,19 @@
-// // S3 bucket configuration
-// var bucketName = 'tokenbid';
-// var bucketRegion = 'US East (N. Virginia) us-east-1';
-// var IdentityPoolId = 'us-east-1:ff5fa4fc-7bd5-427c-ae5a-44f6801508f7';
-
-// AWS.config.update({
-//     region: bucketRegion,
-//     credentials: new AWS.CognitoIdentityCredentials({
-//         IdentityPoolId: IdentityPoolId
-//     })
-// });
-
-// var s3 = new AWS.S3({
-//     apiVersion: '2006-03-01',
-//     params: {Bucket: bucketName}
-// });
-
-// // TODO: Add image to S3 bucket
-// async function addImage(image) {
-//     let filePath = 'images/' + image.name;
-//     let fileUrl = 'https://' + bucketRegion + '.amazonaws.com/tokenbid/' + filePath;
-//     s3.upload({
-//         Key: filePath,
-//         Body: file,
-//         ACL: 'public-read'
-//         }, function(err, data) {
-//             if(err) {
-//                 reject('error');
-//             }
-//             alert('Successfully Uploaded!');
-//         }).on('httpUploadProgress', function (progress) {
-//         var uploaded = parseInt((progress.loaded * 100) / progress.total);
-//         $("progress").attr('value', uploaded);
-//     });
-// }
-
-// // TODO: Update image on S3 bucket
-// async function updateImage(image) {
-
-// }
-
-// Utility function to perform an HTTPRequest, returns a promise with an HTTPResponse
-async function sendRequest(method, path, body) {
-  return await fetch(
-    new Request(path, {
-      method: method,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    })
-  );
-}
-
-// Get data from the database
-async function getUser(userId) {
-  const response = await sendRequest('GET', '/users/' + userId);
-  if (!response.ok) return null;
-  return response.json();
-}
-async function getItem(itemId) {
-  const response = await sendRequest('GET', '/items/' + itemId);
-  if (!response.ok) return null;
-  return response.json();
-}
-async function getAuction(auctionId) {
-  const response = await sendRequest('GET', '/auctions/' + auctionId);
-  if (!response.ok) return null;
-  return response.json();
-}
-async function getBid(bidId) {
-  const response = await sendRequest('GET', '/bids/' + bidId);
-  if (!response.ok) return null;
-  return response.json();
-}
-async function getItemsByCategory(category) {
-    // TODO add endpoint to query by category
-}
-async function getAllItems() {
-  const response = await sendRequest('GET', '/items/all');
-  if (!response.ok) return null;
-  return response.json();
-}
-
-// Add data to database
-async function addUser(user) {
-  return await sendRequest('POST', '/users/add', user);
-}
-async function loginUser(user) {
-  return await sendRequest('POST', '/users/login', user);
-}
-async function addItem(item) {
-  return await sendRequest('POST', '/items/add', item);
-}
-async function addAuction(auction) {
-  return await sendRequest('POST', '/auctions/add', auction);
-}
-async function addBid(bid) {
-  return await sendRequest('POST', '/bids/add', bid);
-}
-
-// Update data on database
-async function updateUser(user) {
-  console.log(user);
-  return await sendRequest('PUT', '/users/' + user.userId, user);
-}
-async function updateItem(item) {
-  return await sendRequest('PUT', '/items/' + item.itemId, item);
-}
-async function updateAuction(auction) {
-  return await sendRequest('PUT', '/auctions/' + auction.auctionId, auction);
-}
-async function updateBid(bid) {
-  return await sendRequest('PUT', '/bids/' + bid.bidId, bid);
-}
+const fetchRequests = require('./fetchRequests');
+const addUser = fetchRequests.addUser;
+const loginUser = fetchRequests.loginUser;
+const addItem = fetchRequests.addItem;
+const addAuction = fetchRequests.addAuction;
+const addBid = fetchRequests.addBid;
+const getUser = fetchRequests.getUser;
+const getItem = fetchRequests.getItem;
+const getAuction = fetchRequests.getAuction;
+const getBid = fetchRequests.getBid;
+const getItemsByCategory = fetchRequests.getItemsByCategory;
+const getAllItems = fetchRequests.getAllItems;
+const updateUser = fetchRequests.updateUser;
+const updateItem = fetchRequests.updateItem;
+const updateAuction = fetchRequests.updateAuction;
+const updateBid = fetchRequests.updateBid;
 
 /////////////////////////////////////////////////////////////////////////////
 // Event listeners, TODO change names when forms are added, add input validation
@@ -235,7 +136,7 @@ if (bidForm) {
     // Get the form values
     const data = new FormData(e.target);
     let bid = {};
-    bid.userId = 1;                         // TODO: get userId from session
+    bid.userId = 1; // TODO: get userId from session
     bid.auctionId = data.get('auctionId'); // TODO: get auctionId from URL
     bid.bid = data.get('bid');
 
