@@ -85,6 +85,18 @@ async function getAllItems() {
   return response.json();
 }
 
+async function getAllItemsForUser(userId) {
+  const response = await sendRequest('GET', '/items/user/' + userId);
+  if (!response.ok) return null;
+  return response.json();
+}
+
+async function getItemAuction(itemId) {
+  const response = await sendRequest('GET', '/items/' + itemId + '/auction');
+  if (!response.ok) return null;
+  return response.json();
+}
+
 // Update data on database
 async function updateUser(user) {
   console.log(user);
@@ -115,6 +127,8 @@ module.exports = {
   getBid,
   getItemsByCategory,
   getAllItems,
+  getAllItemsForUser,
+  getItemAuction,
   getAllActiveAuctions,
   getHighestBid,
   updateUser,
@@ -29388,6 +29402,8 @@ const getAuction = fetchRequests.getAuction;
 const getBid = fetchRequests.getBid;
 const getItemsByCategory = fetchRequests.getItemsByCategory;
 const getAllItems = fetchRequests.getAllItems;
+const getAllItemsForUser = fetchRequests.getAllItemsForUser;
+const getItemAuction = fetchRequests.getItemAuction;
 const getAllActiveAuctions = fetchRequests.getAllActiveAuctions;
 const getHighestBid = fetchRequests.getHighestBid;
 const updateUser = fetchRequests.updateUser;
@@ -29577,12 +29593,40 @@ if (bidForm) {
   });
 }
 
+async function populateItemsSelector(itemsSelector) {
+  let userId = window.sessionStorage.getItem('userId');
+  if (userId === null) {
+    window.location.href = '/login.html';
+  }
+
+  // Get all items belonging to the user
+  let items = await getAllItemsForUser(userId);
+
+  // Find the items not in an auction
+  let availableItems = [];
+  for (let i = 0; i < items.length; i++) {
+    let item = items[i];
+    let auction = await getItemAuction(items[i].itemId);
+    if (auction === null)
+      availableItems.push(item);
+  }
+  
+  // Add available items to the select element
+  itemsSelector.textContent = ''; // remove all children
+  for (let i = 0; i < availableItems.length; i++) {
+    let option = document.createElement('option');
+    option.textContent = availableItems[i].title;
+    itemsSelector.appendChild(option);
+  }
+
+}
+
 async function populateAuctionsContainer(auctionsContainer) {
   // Get current ongoing auctions
   let auctions = await getAllActiveAuctions();
-  let items = [];
 
   // Get information for each item in an ongoing auction
+  let items = [];
   for (let i = 0; i < auctions.length; i++) {
     let item = await getItem(auctions[i].itemId);
     if (item) {
@@ -29679,6 +29723,11 @@ window.addEventListener('DOMContentLoaded', async function (e) {
   const detailContainer = this.document.getElementById('item-detail-container');
   if (detailContainer)
     displayAuctionDetails(urlParams.auctionId, detailContainer);
+
+  // On action.html display items available for auction
+  const itemsSelector = this.document.getElementById('auction-form-items');
+  if (itemsSelector)
+    populateItemsSelector(itemsSelector);
 });
 
 })();

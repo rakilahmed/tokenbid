@@ -23,4 +23,10 @@ public interface AuctionRepository extends JpaRepository<Auction, Integer> {
      */
     @Query(value = "SELECT * FROM auctions WHERE status = 'In Progress' AND end_time > NOW() ORDER BY end_time ASC", nativeQuery = true)
     List<Auction> findAllActiveAuctions();
+
+    /**
+     * @param itemId ItemId to search
+     * @return An auction for an item or null if the item is not in an auction
+     */
+    Auction findByItemId(int itemId);
 }

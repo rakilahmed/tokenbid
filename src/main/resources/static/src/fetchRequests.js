@@ -79,6 +79,18 @@ async function getAllItems() {
   return response.json();
 }
 
+async function getAllItemsForUser(userId) {
+  const response = await sendRequest('GET', '/items/user/' + userId);
+  if (!response.ok) return null;
+  return response.json();
+}
+
+async function getItemAuction(itemId) {
+  const response = await sendRequest('GET', '/items/' + itemId + '/auction');
+  if (!response.ok) return null;
+  return response.json();
+}
+
 // Update data on database
 async function updateUser(user) {
   console.log(user);
@@ -109,6 +121,8 @@ module.exports = {
   getBid,
   getItemsByCategory,
   getAllItems,
+  getAllItemsForUser,
+  getItemAuction,
   getAllActiveAuctions,
   getHighestBid,
   updateUser,
