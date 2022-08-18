@@ -74,4 +74,8 @@ public class ItemController implements IController<Item> {
         return ResponseEntity.ok(itemService.getAll());
     }
 
+    @GetMapping(path = "/{userId}/available", produces = "application/json")
+    public ResponseEntity<List<Item>> getAllAvailableItems(@PathVariable("userId") int userId) {
+        return ResponseEntity.ok(itemService.getAllAvailableItems(userId));
+    }
 }

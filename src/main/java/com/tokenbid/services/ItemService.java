@@ -41,7 +41,6 @@ public class ItemService implements IService<Item> {
         if (itemRepository.findById(id).isPresent()) {
             return itemRepository.findById(id).get();
         }
-
         return null;
     }
 
@@ -50,4 +49,13 @@ public class ItemService implements IService<Item> {
         return itemRepository.findAll();
     }
 
+    /**
+     * Gets all available items that are not currently being auctioned
+     * 
+     * @param userId The id of the user to search for
+     * @return A list of all available items that are not currently being auctioned
+     */
+    public List<Item> getAllAvailableItems(int userId) {
+        return itemRepository.findAllAvailableItems(userId);
+    }
 }
