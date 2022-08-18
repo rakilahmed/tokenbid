@@ -11,6 +11,7 @@ const getAuction = fetchRequests.getAuction;
 const getBid = fetchRequests.getBid;
 const getItemsByCategory = fetchRequests.getItemsByCategory;
 const getAllItems = fetchRequests.getAllItems;
+const getAllAvailableItemsForUser = fetchRequests.getAllAvailableItemsForUser;
 const getAllActiveAuctions = fetchRequests.getAllActiveAuctions;
 const getHighestBid = fetchRequests.getHighestBid;
 const updateUser = fetchRequests.updateUser;
@@ -176,11 +177,9 @@ if (itemForm) {
     let response = await addItem(item);
     if (response.ok) {
       console.log('Item added!');
-      window.location.href = '/explore.html';
+      window.location.href = '/action.html';
     } else {
       console.log('Failed to add item');
-      item.imageUrl =
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/1024px-No_image_available.svg.png';
     }
   });
 }
@@ -196,7 +195,7 @@ if (auctionForm) {
     let start = new Date().getTime();
     let end = start + 1000 * 60 * 60 * hours;
     let auction = {};
-    auction.itemId = data.get('itemId');
+    auction.itemId = data.get('itemId').split(' ')[0];
     auction.startingBid = data.get('startingBid');
     auction.startTime = new Date(start).toJSON();
     auction.endTime = new Date(end).toJSON();
@@ -205,7 +204,7 @@ if (auctionForm) {
     let response = await addAuction(auction);
     if (response.ok) {
       console.log('Auction added!');
-
+      window.location.href = '/explore.html';
       // TODO: Start a timer if auction was successfully added
     } else {
       console.log('Failed to add auction');
@@ -233,7 +232,7 @@ if (bidForm) {
     let bid = {};
     bid.userId = userId;
     bid.auctionId = urlParams.auctionId;
-    bid.bid = data.get('bid');
+    bid.bid = data.get('bidAmount');
 
     // Add new bid to database
     let response = await addBid(bid);
@@ -248,12 +247,32 @@ if (bidForm) {
   });
 }
 
+async function populateItemsSelector(itemsSelector) {
+  let userId = window.sessionStorage.getItem('userId');
+
+  if (userId === null) {
+    window.location.href = '/login.html';
+  }
+
+  // Find the items not in an auction
+  let availableItems = await getAllAvailableItemsForUser(userId);
+
+  // Add available items to the select element
+  itemsSelector.textContent = ''; // remove all children
+  for (let i = 0; i < availableItems.length; i++) {
+    let option = document.createElement('option');
+    option.textContent =
+      availableItems[i].itemId + ' (' + availableItems[i].title + ')';
+    itemsSelector.appendChild(option);
+  }
+}
+
 async function populateAuctionsContainer(auctionsContainer) {
   // Get current ongoing auctions
   let auctions = await getAllActiveAuctions();
-  let items = [];
 
   // Get information for each item in an ongoing auction
+  let items = [];
   for (let i = 0; i < auctions.length; i++) {
     let item = await getItem(auctions[i].itemId);
     if (item) {
@@ -379,8 +398,11 @@ window.addEventListener('DOMContentLoaded', async function (e) {
   if (detailContainer)
     displayAuctionDetails(urlParams.auctionId, detailContainer);
 
+  // On action.html display items available for auction
+  const itemsSelector = this.document.getElementById('auction-form-items');
+  if (itemsSelector) populateItemsSelector(itemsSelector);
+
   // On profile.html display profile information
   const profileContainer = this.document.getElementById('profile-container');
-  if (profileContainer)
-    displayProfileInformation(profileContainer);
+  if (profileContainer) displayProfileInformation(profileContainer);
 });

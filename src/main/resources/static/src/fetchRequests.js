@@ -62,7 +62,7 @@ async function getItemsByCategory(category) {
 }
 
 async function getAllActiveAuctions() {
-  const response = await sendRequest('GET', '/auctions/active')
+  const response = await sendRequest('GET', '/auctions/active');
   if (!response.ok) return null;
   return response.json();
 }
@@ -79,8 +79,15 @@ async function getAllItems() {
   return response.json();
 }
 
+async function getAllAvailableItemsForUser(userId) {
+  const response = await sendRequest('GET', '/items/' + userId + '/available');
+  if (!response.ok) return null;
+  return response.json();
+}
+
 // Update data on database
 async function updateUser(user) {
+  console.log(user);
   return await sendRequest('PUT', '/users/' + user.userId, user);
 }
 
@@ -108,6 +115,7 @@ module.exports = {
   getBid,
   getItemsByCategory,
   getAllItems,
+  getAllAvailableItemsForUser,
   getAllActiveAuctions,
   getHighestBid,
   updateUser,
