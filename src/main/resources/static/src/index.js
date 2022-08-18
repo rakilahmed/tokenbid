@@ -80,6 +80,50 @@ if (loginForm) {
   });
 }
 
+const profileForm = document.getElementById('profile-form');
+if (profileForm) {
+  profileForm.addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    let userId = window.sessionStorage.getItem('userId');
+    if (userId === null) {
+      window.location.href = '/login.html';
+    }
+
+    // Validate form input
+    const data = new FormData(e.target);
+    let firstName = data.get('firstName');
+    let lastName = data.get('lastName');
+    let password = data.get('password');
+    let confirm = data.get('confirmPassword');
+    if (!firstName || firstName.trim() === '' || !lastName || lastName.trim() === '' || !password || password === '') {
+      alert('Please fill out all fields');
+      return;
+    } else if (!confirm || password !== confirm) {
+      alert('Passwords do not match');
+      return;
+    }
+
+    let updatedUser = {};
+    updatedUser.userId = userId;
+    updatedUser.firstName = firstName.trim();
+    updatedUser.lastName = lastName.trim();
+    updatedUser.password = password;
+
+    let response = await updateUser(updatedUser);
+    if (response.ok) {
+      // display new data
+      const profileContainer = document.getElementById('profile-container');
+      if (profileContainer) {
+        document.getElementById('profile-first-name').textContent = updatedUser.firstName;
+        document.getElementById('profile-last-name').textContent = updatedUser.lastName;
+      }
+    } else {
+      alert('Failed to update user');
+    }
+  });
+}
+
 const itemForm = document.getElementById('item-form');
 if (itemForm) {
   itemForm.addEventListener('submit', async function (e) {
@@ -289,6 +333,35 @@ async function displayAuctionDetails(auctionId, detailContainer) {
   detailContainer.appendChild(currentBidEle);
 }
 
+async function displayProfileInformation(profileContainer) {
+  const userId = sessionStorage.getItem('userId');
+  if (userId === null) {
+    window.location.href = '/login.html';
+  }
+
+  let firstNameEle = document.getElementById('profile-first-name');
+  let lastNameEle = document.getElementById('profile-last-name');
+  let emailEle = document.getElementById('profile-email');
+  let usernameEle = document.getElementById('profile-username');
+  let tokensEle = document.getElementById('profile-tokens');
+
+  // Remove current information
+  if (firstNameEle) firstNameEle.textContent = '';
+  if (lastNameEle) lastNameEle.textContent = '';
+  if (emailEle) emailEle.textContent = '';
+  if (usernameEle) usernameEle.textContent = '';
+  if (tokensEle) tokensEle.textContent = '';
+
+  const user = await getUser(userId);
+  if (!user) return;
+
+  if (firstNameEle) firstNameEle.textContent = user.firstName;
+  if (lastNameEle) lastNameEle.textContent = user.lastName;
+  if (emailEle) emailEle.textContent = user.email;
+  if (usernameEle) usernameEle.textContent = user.username;
+  if (tokensEle) tokensEle.textContent = user.tokens;
+}
+
 window.addEventListener('DOMContentLoaded', async function (e) {
   // Array of url query parameters
   const urlParams = new Proxy(new URLSearchParams(window.location.search), {
@@ -303,4 +376,9 @@ window.addEventListener('DOMContentLoaded', async function (e) {
   const detailContainer = this.document.getElementById('item-detail-container');
   if (detailContainer)
     displayAuctionDetails(urlParams.auctionId, detailContainer);
+
+  // On profile.html display profile information
+  const profileContainer = this.document.getElementById('profile-container');
+  if (profileContainer)
+    displayProfileInformation(profileContainer);
 });

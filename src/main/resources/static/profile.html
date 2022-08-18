@@ -32,14 +32,15 @@
             <div class="wrapper">
               <div class="row no-gutters">
                 <div class="col-md-6 d-flex align-items-stretch">
-                  <div class="contact-wrap w-100 p-md-5 p-4 py-5">
+                  <div id="profile-container" class="contact-wrap w-100 p-md-5 p-4 py-5">
                     <h3 class="mb-4">Your Current Info:</h3>
                     <div id="form-message-warning" class="mb-4"></div>
 
-                    <p style="color: white">First Name</p>
-                    <p style="color: white">Last Name</p>
-                    <p style="color: white">Email</p>
-                    <p style="color: white">Username</p>
+                    <p style="color: white">First Name: <span id="profile-first-name"></span></p>
+                    <p style="color: white">Last Name: <span id="profile-last-name"></span></p>
+                    <p style="color: white">Email: <span id="profile-email"></span></p>
+                    <p style="color: white">Username: <span id="profile-username"></span></p>
+                    <p style="color: white">Current tokens: <span id="profile-tokens"></span></p>
 
                     <div style="padding: 5%"></div>
                     <button onclick="showProfileForm();" class="button-19">
@@ -50,8 +51,6 @@
 
                 <div class="col-md-6 d-flex align-items-stretch">
                   <div class="info-wrap w-100 p-md-5 p-4 py-5 img">
-                    <h3 style="text-align: center">Welcome to Token Bid</h3>
-
                     <form id="profile-form">
                       <p class="mb-4" style="text-align: center">Update Info</p>
                       <p style="color: white; margin: 0">First Name:</p>
