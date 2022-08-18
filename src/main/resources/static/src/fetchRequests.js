@@ -81,7 +81,6 @@ async function getAllItems() {
 
 // Update data on database
 async function updateUser(user) {
-  console.log(user);
   return await sendRequest('PUT', '/users/' + user.userId, user);
 }
 

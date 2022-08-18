@@ -96,28 +96,30 @@ if (profileForm) {
     let lastName = data.get('lastName');
     let password = data.get('password');
     let confirm = data.get('confirmPassword');
-    if (!firstName || firstName.trim() === '' || !lastName || lastName.trim() === '' || !password || password === '') {
-      alert('Please fill out all fields');
-      return;
-    } else if (!confirm || password !== confirm) {
-      alert('Passwords do not match');
-      return;
-    }
 
     let updatedUser = {};
     updatedUser.userId = userId;
-    updatedUser.firstName = firstName.trim();
-    updatedUser.lastName = lastName.trim();
-    updatedUser.password = password;
+
+    if (firstName || firstName.trim() !== '') {
+      updatedUser.firstName = firstName.trim();
+    } else updatedUser.firstName = null;
+
+    if (lastName || lastName.trim() !== '') {
+      updatedUser.lastName = lastName.trim();
+    } else updatedUser.lastName = null;
+
+    if (password || password !== '') {
+      if (password !== confirm) {
+        alert('Passwords do not match');
+        return;
+      }
+      updatedUser.password = password;
+    } else updatedUser.password = null;
 
     let response = await updateUser(updatedUser);
     if (response.ok) {
-      // display new data
-      const profileContainer = document.getElementById('profile-container');
-      if (profileContainer) {
-        document.getElementById('profile-first-name').textContent = updatedUser.firstName;
-        document.getElementById('profile-last-name').textContent = updatedUser.lastName;
-      }
+      console.log('User updated!');
+      window.location.href = '/profile.html';
     } else {
       alert('Failed to update user');
     }
