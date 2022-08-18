@@ -2,8 +2,6 @@ package com.tokenbid.services;
 
 import java.util.List;
 
-import com.tokenbid.models.Auction;
-import com.tokenbid.repositories.AuctionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,12 +11,10 @@ import com.tokenbid.repositories.ItemRepository;
 @Service
 public class ItemService implements IService<Item> {
     private ItemRepository itemRepository;
-    private AuctionRepository auctionRepository;
 
     @Autowired
-    public ItemService(ItemRepository itemRepository, AuctionRepository auctionRepository) {
+    public ItemService(ItemRepository itemRepository) {
         this.itemRepository = itemRepository;
-        this.auctionRepository = auctionRepository;
     }
 
     @Override
@@ -54,15 +50,12 @@ public class ItemService implements IService<Item> {
     }
 
     /**
-     * @param itemId Item to search for
-     * @return An auction associated to an item or null if there is none
+     * Gets all available items that are not currently being auctioned
+     * 
+     * @param userId The id of the user to search for
+     * @return A list of all available items that are not currently being auctioned
      */
-    public Auction getItemAuction(int itemId) {
-        return auctionRepository.findByItemId(itemId);
+    public List<Item> getAllAvailableItems(int userId) {
+        return itemRepository.findAllAvailableItems(userId);
     }
-
-    public List<Item> getAllForUser(int userId) {
-        return itemRepository.findAllByUserId(userId);
-    }
-
 }

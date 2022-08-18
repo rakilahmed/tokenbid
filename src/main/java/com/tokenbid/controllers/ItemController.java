@@ -4,7 +4,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import com.tokenbid.models.Auction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -75,18 +74,9 @@ public class ItemController implements IController<Item> {
         return ResponseEntity.ok(itemService.getAll());
     }
 
-    @GetMapping(path = "/user/{id}")
-    public ResponseEntity<List<Item>> getAllForUser(@PathVariable("id") int userId) {
-        return ResponseEntity.ok(itemService.getAllForUser(userId));
-    }
-
-    @GetMapping(path = "/{id}/auction")
-    public ResponseEntity<Auction> getItemAuction(@PathVariable("id") int itemId) {
-        Auction auction = itemService.getItemAuction(itemId);
-        if (auction != null) {
-            return ResponseEntity.ok(auction);
-        }
-        return ResponseEntity.notFound().build();
+    @GetMapping(path = "/{userId}/available", produces = "application/json")
+    public ResponseEntity<List<Item>> getAllAvailableItems(@PathVariable("userId") int userId) {
+        return ResponseEntity.ok(itemService.getAllAvailableItems(userId));
     }
 
 }
