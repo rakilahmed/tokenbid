@@ -62,7 +62,7 @@ async function getItemsByCategory(category) {
 }
 
 async function getAllActiveAuctions() {
-  const response = await sendRequest('GET', '/auctions/active')
+  const response = await sendRequest('GET', '/auctions/active');
   if (!response.ok) return null;
   return response.json();
 }
@@ -85,8 +85,8 @@ async function getAllItemsForUser(userId) {
   return response.json();
 }
 
-async function getItemAuction(itemId) {
-  const response = await sendRequest('GET', '/items/' + itemId + '/auction');
+async function getAllAvailableItemsForUser(userId) {
+  const response = await sendRequest('GET', '/items/' + userId + '/available');
   if (!response.ok) return null;
   return response.json();
 }
@@ -122,7 +122,7 @@ module.exports = {
   getItemsByCategory,
   getAllItems,
   getAllItemsForUser,
-  getItemAuction,
+  getAllAvailableItemsForUser,
   getAllActiveAuctions,
   getHighestBid,
   updateUser,

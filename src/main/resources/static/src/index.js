@@ -12,7 +12,7 @@ const getBid = fetchRequests.getBid;
 const getItemsByCategory = fetchRequests.getItemsByCategory;
 const getAllItems = fetchRequests.getAllItems;
 const getAllItemsForUser = fetchRequests.getAllItemsForUser;
-const getItemAuction = fetchRequests.getItemAuction;
+const getAllAvailableItemsForUser = fetchRequests.getAllAvailableItemsForUser;
 const getAllActiveAuctions = fetchRequests.getAllActiveAuctions;
 const getHighestBid = fetchRequests.getHighestBid;
 const updateUser = fetchRequests.updateUser;
@@ -132,7 +132,7 @@ if (itemForm) {
     let response = await addItem(item);
     if (response.ok) {
       console.log('Item added!');
-      window.location.href = '/explore.html';
+      window.location.href = '/action.html';
     } else {
       console.log('Failed to add item');
     }
@@ -150,7 +150,7 @@ if (auctionForm) {
     let start = new Date().getTime();
     let end = start + 1000 * 60 * 60 * hours;
     let auction = {};
-    auction.itemId = data.get('itemId');
+    auction.itemId = data.get('itemId').split(' ')[0];
     auction.startingBid = data.get('startingBid');
     auction.startTime = new Date(start).toJSON();
     auction.endTime = new Date(end).toJSON();
@@ -159,7 +159,7 @@ if (auctionForm) {
     let response = await addAuction(auction);
     if (response.ok) {
       console.log('Auction added!');
-
+      window.location.href = '/explore.html';
       // TODO: Start a timer if auction was successfully added
     } else {
       console.log('Failed to add auction');
@@ -179,7 +179,7 @@ if (bidForm) {
 
     // Array of url query parameters
     const urlParams = new Proxy(new URLSearchParams(window.location.search), {
-      get: (searchParams, prop) => searchParams.get(prop)
+      get: (searchParams, prop) => searchParams.get(prop),
     });
 
     // Get the form values
@@ -204,30 +204,22 @@ if (bidForm) {
 
 async function populateItemsSelector(itemsSelector) {
   let userId = window.sessionStorage.getItem('userId');
+
   if (userId === null) {
     window.location.href = '/login.html';
   }
 
-  // Get all items belonging to the user
-  let items = await getAllItemsForUser(userId);
-
   // Find the items not in an auction
-  let availableItems = [];
-  for (let i = 0; i < items.length; i++) {
-    let item = items[i];
-    let auction = await getItemAuction(items[i].itemId);
-    if (auction === null)
-      availableItems.push(item);
-  }
-  
+  let availableItems = await getAllAvailableItemsForUser(userId);
+
   // Add available items to the select element
   itemsSelector.textContent = ''; // remove all children
   for (let i = 0; i < availableItems.length; i++) {
     let option = document.createElement('option');
-    option.textContent = availableItems[i].title;
+    option.textContent =
+      availableItems[i].itemId + ' (' + availableItems[i].title + ')';
     itemsSelector.appendChild(option);
   }
-
 }
 
 async function populateAuctionsContainer(auctionsContainer) {
@@ -320,13 +312,12 @@ async function displayAuctionDetails(auctionId, detailContainer) {
 window.addEventListener('DOMContentLoaded', async function (e) {
   // Array of url query parameters
   const urlParams = new Proxy(new URLSearchParams(window.location.search), {
-    get: (searchParams, prop) => searchParams.get(prop)
+    get: (searchParams, prop) => searchParams.get(prop),
   });
 
   // On explore.html display current items for auction
   const auctionsContainer = this.document.getElementById('auctions-container');
-  if (auctionsContainer)
-    populateAuctionsContainer(auctionsContainer);
+  if (auctionsContainer) populateAuctionsContainer(auctionsContainer);
 
   // On auction.html display auction details
   const detailContainer = this.document.getElementById('item-detail-container');
@@ -335,6 +326,5 @@ window.addEventListener('DOMContentLoaded', async function (e) {
 
   // On action.html display items available for auction
   const itemsSelector = this.document.getElementById('auction-form-items');
-  if (itemsSelector)
-    populateItemsSelector(itemsSelector);
+  if (itemsSelector) populateItemsSelector(itemsSelector);
 });
